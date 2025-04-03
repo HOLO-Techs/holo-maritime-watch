@@ -1,15 +1,14 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bell, Menu, Calendar, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Sidebar from './Sidebar';
 
 const Navbar: React.FC = () => {
-  const [currentTime, setCurrentTime] = React.useState<string>('');
-  const [currentDate, setCurrentDate] = React.useState<string>('');
+  const [currentTime, setCurrentTime] = useState<string>('');
+  const [currentDate, setCurrentDate] = useState<string>('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
       setCurrentTime(now.toLocaleTimeString('en-US', { hour12: false }));
