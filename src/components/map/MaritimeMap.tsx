@@ -1,9 +1,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { AlertCircle, Cable } from 'lucide-react';
+import { AlertCircle, Cable, ZoomIn, ZoomOut } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import AlertModal from '../alerts/AlertModal';
 
 interface MaritimeMapProps {
   onAlertClick: () => void;
@@ -18,19 +17,24 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
     if (!mapContainerRef.current) return;
     
     if (!mapRef.current) {
-      // Initialize the map
+      // Initialize the map with OpenStreetMap
       const map = L.map(mapContainerRef.current, {
         center: [13.927512, -78.259939], // Center the map on our critical alert
-        zoom: 8,
+        zoom: 9,
+        zoomControl: false, // We'll add custom zoom controls
         layers: [
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
           })
         ]
       });
       
       map.attributionControl.setPrefix('HOLO MARITIME WATCH');
       mapRef.current = map;
+      
+      // Enable scroll wheel zoom
+      map.scrollWheelZoom.enable();
       
       // Create custom icons
       const criticalIcon = L.divIcon({
@@ -84,6 +88,13 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
         const latStep = (north - south) / 12;
         const lngStep = (east - west) / 12;
         
+        // Remove existing grid lines
+        map.eachLayer((layer) => {
+          if (layer.options && layer.options.className === 'grid-line') {
+            map.removeLayer(layer);
+          }
+        });
+        
         // Add horizontal grid lines
         for (let i = 1; i < 12; i++) {
           const lat = south + i * latStep;
@@ -91,7 +102,8 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
             color: '#d4af37',
             weight: 0.5,
             opacity: 0.3,
-            interactive: false
+            interactive: false,
+            className: 'grid-line'
           }).addTo(map);
         }
         
@@ -102,13 +114,15 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
             color: '#d4af37',
             weight: 0.5,
             opacity: 0.3,
-            interactive: false
+            interactive: false,
+            className: 'grid-line'
           }).addTo(map);
         }
       };
       
       addGridLines();
       map.on('moveend', addGridLines);
+      map.on('zoomend', addGridLines);
       
       setMapLoaded(true);
     }
@@ -120,6 +134,18 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       }
     };
   }, [onAlertClick]);
+
+  const handleZoomIn = () => {
+    if (mapRef.current) {
+      mapRef.current.zoomIn();
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (mapRef.current) {
+      mapRef.current.zoomOut();
+    }
+  };
 
   return (
     <div className="relative w-full h-full rounded overflow-hidden holo-monitor-border">
@@ -139,7 +165,7 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       <div className="absolute top-2 left-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-[1000]">
         <div className="flex items-center gap-2">
           <span className="text-holo-gray/80">Zoom:</span>
-          <span className="text-holo-gold">{mapRef.current ? mapRef.current.getZoom().toFixed(1) : '10.5'} km</span>
+          <span className="text-holo-gold">{mapRef.current ? mapRef.current.getZoom().toFixed(1) : '9.0'} km</span>
         </div>
       </div>
       
@@ -163,6 +189,22 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
           <AlertCircle className="w-4 h-4 text-blue-400" />
           <span>Información</span>
         </div>
+      </div>
+      
+      {/* Custom Zoom Controls */}
+      <div className="absolute right-2 bottom-2 flex flex-col gap-1 z-[1000]">
+        <button 
+          onClick={handleZoomIn}
+          className="bg-black/60 text-holo-gray p-2 rounded border border-holo-gold/30 hover:bg-black/80"
+        >
+          <ZoomIn size={16} />
+        </button>
+        <button 
+          onClick={handleZoomOut}
+          className="bg-black/60 text-holo-gray p-2 rounded border border-holo-gold/30 hover:bg-black/80"
+        >
+          <ZoomOut size={16} />
+        </button>
       </div>
     </div>
   );

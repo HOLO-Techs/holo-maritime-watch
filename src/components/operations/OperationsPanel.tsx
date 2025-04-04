@@ -26,50 +26,48 @@ const OperationsPanel: React.FC = () => {
       <div className="holo-panel">
         <h2 className="holo-title mb-4">Operaciones</h2>
         
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Vertical Menu */}
-          <div className="w-full md:w-1/3">
-            <div className="flex flex-col space-y-2">
-              <button
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm ${
-                  activeOperation === 'satellite' 
-                    ? 'bg-holo-gold/20 text-holo-gold border border-holo-gold/50' 
-                    : 'bg-black/50 text-holo-gray hover:bg-black/70 border border-holo-gold/20'
-                }`}
-                onClick={() => setActiveOperation('satellite')}
-              >
-                <Satellite size={16} />
-                <span>Imagen Satelital</span>
-              </button>
-              
-              <button
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm ${
-                  activeOperation === 'sar' 
-                    ? 'bg-holo-gold/20 text-holo-gold border border-holo-gold/50' 
-                    : 'bg-black/50 text-holo-gray hover:bg-black/70 border border-holo-gold/20'
-                }`}
-                onClick={() => setActiveOperation('sar')}
-              >
-                <Radio size={16} />
-                <span>Imagen SAR</span>
-              </button>
-              
-              <button
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm ${
-                  activeOperation === 'uav' 
-                    ? 'bg-holo-gold/20 text-holo-gold border border-holo-gold/50' 
-                    : 'bg-black/50 text-holo-gray hover:bg-black/70 border border-holo-gold/20'
-                }`}
-                onClick={() => setActiveOperation('uav')}
-              >
-                <AlertTriangle size={16} />
-                <span>Recon UAV</span>
-              </button>
-            </div>
+        <div className="flex flex-col gap-4">
+          {/* Vertical Menu with content below */}
+          <div className="space-y-2">
+            <button
+              className={`flex items-center gap-2 w-full px-3 py-2 rounded-md text-left text-sm ${
+                activeOperation === 'satellite' 
+                  ? 'bg-holo-gold/20 text-holo-gold border border-holo-gold/50' 
+                  : 'bg-black/50 text-holo-gray hover:bg-black/70 border border-holo-gold/20'
+              }`}
+              onClick={() => setActiveOperation('satellite')}
+            >
+              <Satellite size={16} />
+              <span>Imagen Satelital</span>
+            </button>
+            
+            <button
+              className={`flex items-center gap-2 w-full px-3 py-2 rounded-md text-left text-sm ${
+                activeOperation === 'sar' 
+                  ? 'bg-holo-gold/20 text-holo-gold border border-holo-gold/50' 
+                  : 'bg-black/50 text-holo-gray hover:bg-black/70 border border-holo-gold/20'
+              }`}
+              onClick={() => setActiveOperation('sar')}
+            >
+              <Radio size={16} />
+              <span>Imagen SAR</span>
+            </button>
+            
+            <button
+              className={`flex items-center gap-2 w-full px-3 py-2 rounded-md text-left text-sm ${
+                activeOperation === 'uav' 
+                  ? 'bg-holo-gold/20 text-holo-gold border border-holo-gold/50' 
+                  : 'bg-black/50 text-holo-gray hover:bg-black/70 border border-holo-gold/20'
+              }`}
+              onClick={() => setActiveOperation('uav')}
+            >
+              <AlertTriangle size={16} />
+              <span>Recon UAV</span>
+            </button>
           </div>
           
           {/* Content Area */}
-          <div className="w-full md:w-2/3">
+          <div className="mt-4">
             {activeOperation === 'satellite' && (
               <div className="space-y-3">
                 <p className="text-sm">
