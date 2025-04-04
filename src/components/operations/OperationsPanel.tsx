@@ -3,22 +3,122 @@ import React, { useState } from 'react';
 import { Satellite, Radio, AlertTriangle, Lock, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ReconUAV from '../alerts/ReconUAV';
+import { toast } from 'sonner';
+
+// Interface to communicate with MaritimeMap for area selection
+export interface AreaSelectionEvent {
+  type: 'satellite' | 'sar' | 'uav';
+  active: boolean;
+}
 
 const OperationsPanel: React.FC = () => {
   const [activeOperation, setActiveOperation] = useState('satellite');
   const [showUavModal, setShowUavModal] = useState(false);
   const [showLockedFeatureModal, setShowLockedFeatureModal] = useState(false);
+  const [areaSelectionActive, setAreaSelectionActive] = useState<AreaSelectionEvent | null>(null);
+  
+  const handleAreaSelectionComplete = () => {
+    // This would normally receive coordinates from the map
+    // For now, just show the locked feature modal after a brief delay
+    setTimeout(() => {
+      setAreaSelectionActive(null);
+      setShowLockedFeatureModal(true);
+      
+      // Add an event to notify the Maritime Map component to exit selection mode
+      const event = new CustomEvent('area-selection-complete', { 
+        detail: { active: false }
+      });
+      window.dispatchEvent(event);
+    }, 1000);
+  };
   
   const handleSatelliteOperation = () => {
-    setShowLockedFeatureModal(true);
+    if (areaSelectionActive) {
+      // Cancel current selection
+      setAreaSelectionActive(null);
+      const event = new CustomEvent('area-selection-update', { 
+        detail: { type: 'satellite', active: false } 
+      });
+      window.dispatchEvent(event);
+      toast.info("Selección de área cancelada");
+      return;
+    }
+    
+    // Start selection mode
+    const newAreaSelection = { type: 'satellite', active: true } as AreaSelectionEvent;
+    setAreaSelectionActive(newAreaSelection);
+    
+    // Send event to the map component to enter selection mode
+    const event = new CustomEvent('area-selection-update', { 
+      detail: newAreaSelection 
+    });
+    window.dispatchEvent(event);
+    
+    toast.info("Seleccione un área de 10km x 10km en el mapa");
+    
+    // Set up listener for when area is selected on map
+    window.addEventListener('area-selection-complete', handleAreaSelectionComplete, { once: true });
   };
   
   const handleSarOperation = () => {
-    setShowLockedFeatureModal(true);
+    if (areaSelectionActive) {
+      // Cancel current selection
+      setAreaSelectionActive(null);
+      const event = new CustomEvent('area-selection-update', { 
+        detail: { type: 'sar', active: false } 
+      });
+      window.dispatchEvent(event);
+      toast.info("Selección de área cancelada");
+      return;
+    }
+    
+    // Start selection mode
+    const newAreaSelection = { type: 'sar', active: true } as AreaSelectionEvent;
+    setAreaSelectionActive(newAreaSelection);
+    
+    // Send event to the map component to enter selection mode
+    const event = new CustomEvent('area-selection-update', { 
+      detail: newAreaSelection 
+    });
+    window.dispatchEvent(event);
+    
+    toast.info("Seleccione un área de 10km x 10km en el mapa");
+    
+    // Set up listener for when area is selected on map
+    window.addEventListener('area-selection-complete', handleAreaSelectionComplete, { once: true });
   };
   
   const handleUavOperation = () => {
-    setShowUavModal(true);
+    if (areaSelectionActive) {
+      // Cancel current selection
+      setAreaSelectionActive(null);
+      const event = new CustomEvent('area-selection-update', { 
+        detail: { type: 'uav', active: false } 
+      });
+      window.dispatchEvent(event);
+      toast.info("Selección de área cancelada");
+      return;
+    }
+    
+    // Start selection mode
+    const newAreaSelection = { type: 'uav', active: true } as AreaSelectionEvent;
+    setAreaSelectionActive(newAreaSelection);
+    
+    // Send event to the map component to enter selection mode
+    const event = new CustomEvent('area-selection-update', { 
+      detail: newAreaSelection 
+    });
+    window.dispatchEvent(event);
+    
+    toast.info("Seleccione un área de 10km x 10km en el mapa");
+    
+    // Set up listener for when area is selected on map
+    window.addEventListener('area-selection-complete', handleAreaSelectionComplete, { once: true });
+    
+    // For UAV we'll show the UAV dialog instead of locked feature
+    window.addEventListener('area-selection-complete', () => {
+      setShowUavModal(true);
+    }, { once: true });
   };
   
   return (
@@ -80,7 +180,11 @@ const OperationsPanel: React.FC = () => {
                   onClick={handleSatelliteOperation}
                 >
                   <Satellite size={16} />
-                  <span>Solicitar Imagen</span>
+                  <span>
+                    {areaSelectionActive?.type === 'satellite' 
+                      ? 'Cancelar Selección' 
+                      : 'Seleccionar Área'}
+                  </span>
                 </button>
               </div>
             )}
@@ -97,7 +201,11 @@ const OperationsPanel: React.FC = () => {
                   onClick={handleSarOperation}
                 >
                   <Radio size={16} />
-                  <span>Solicitar Imagen</span>
+                  <span>
+                    {areaSelectionActive?.type === 'sar' 
+                      ? 'Cancelar Selección' 
+                      : 'Seleccionar Área'}
+                  </span>
                 </button>
               </div>
             )}
@@ -114,7 +222,11 @@ const OperationsPanel: React.FC = () => {
                   onClick={handleUavOperation}
                 >
                   <AlertTriangle size={16} />
-                  <span>Solicitar UAV</span>
+                  <span>
+                    {areaSelectionActive?.type === 'uav' 
+                      ? 'Cancelar Selección' 
+                      : 'Seleccionar Área'}
+                  </span>
                 </button>
               </div>
             )}

@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, AlertCircle, ZoomIn, ZoomOut } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { toast } from 'sonner';
 
 interface MaritimeMapProps {
   onAlertClick: () => void;
@@ -17,6 +18,9 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const mapRef = useRef<L.Map | null>(null);
+  const [isSelectingArea, setIsSelectingArea] = useState(false);
+  const [selectionType, setSelectionType] = useState<'satellite' | 'sar' | 'uav' | null>(null);
+  const selectionRectRef = useRef<L.Rectangle | null>(null);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -140,6 +144,105 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
     };
   }, [onAlertClick]);
 
+  // Handle area selection mode updates
+  useEffect(() => {
+    const handleAreaSelectionUpdate = (event: CustomEvent) => {
+      const { type, active } = event.detail;
+      
+      setIsSelectingArea(active);
+      setSelectionType(active ? type : null);
+      
+      if (!active && selectionRectRef.current && mapRef.current) {
+        mapRef.current.removeLayer(selectionRectRef.current);
+        selectionRectRef.current = null;
+      }
+    };
+    
+    window.addEventListener('area-selection-update', handleAreaSelectionUpdate as EventListener);
+    
+    // Listen for area selection complete
+    window.addEventListener('area-selection-complete', () => {
+      setIsSelectingArea(false);
+      setSelectionType(null);
+      
+      if (selectionRectRef.current && mapRef.current) {
+        mapRef.current.removeLayer(selectionRectRef.current);
+        selectionRectRef.current = null;
+      }
+    });
+    
+    return () => {
+      window.removeEventListener('area-selection-update', handleAreaSelectionUpdate as EventListener);
+    };
+  }, []);
+  
+  // Set up click handler for map when in selection mode
+  useEffect(() => {
+    if (!mapRef.current || !isSelectingArea) return;
+    
+    const map = mapRef.current;
+    
+    // Function to create a 10km x 10km rectangle
+    const createSelectionRectangle = (e: L.LeafletMouseEvent) => {
+      // Clear any existing rectangle
+      if (selectionRectRef.current) {
+        map.removeLayer(selectionRectRef.current);
+      }
+      
+      // Get click coordinates
+      const center = e.latlng;
+      
+      // Create bounds for a 10km x 10km square (approximately)
+      // 0.09 degrees is roughly 10km at the equator
+      const offset = 0.045; // half of 0.09 for 5km in each direction
+      const bounds = L.latLngBounds(
+        [center.lat - offset, center.lng - offset],
+        [center.lat + offset, center.lng + offset]
+      );
+      
+      // Create rectangle with color based on selection type
+      let color = '#d4af37'; // Default gold
+      if (selectionType === 'satellite') color = '#3b82f6'; // Blue for satellite
+      if (selectionType === 'sar') color = '#ef4444'; // Red for SAR
+      if (selectionType === 'uav') color = '#10b981'; // Green for UAV
+      
+      // Create and add the rectangle
+      const rectangle = L.rectangle(bounds, {
+        color: color,
+        weight: 2,
+        fillColor: color,
+        fillOpacity: 0.2,
+        interactive: false
+      });
+      
+      rectangle.addTo(map);
+      selectionRectRef.current = rectangle;
+      
+      // Trigger the completed event after a short delay
+      setTimeout(() => {
+        const event = new CustomEvent('area-selection-complete', { 
+          detail: { 
+            bounds: bounds,
+            center: center
+          } 
+        });
+        window.dispatchEvent(event);
+      }, 1000);
+    };
+    
+    const clickHandler = (e: L.LeafletMouseEvent) => {
+      if (isSelectingArea) {
+        createSelectionRectangle(e);
+      }
+    };
+    
+    map.on('click', clickHandler);
+    
+    return () => {
+      map.off('click', clickHandler);
+    };
+  }, [isSelectingArea, selectionType]);
+
   const handleZoomIn = () => {
     if (mapRef.current) {
       mapRef.current.zoomIn();
@@ -157,7 +260,7 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       {/* Map Container */}
       <div 
         ref={mapContainerRef} 
-        className="absolute inset-0 bg-holo-navy/90"
+        className={`absolute inset-0 bg-holo-navy/90 ${isSelectingArea ? 'cursor-crosshair' : 'cursor-grab'}`}
       >
         {!mapLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -165,6 +268,13 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
           </div>
         )}
       </div>
+      
+      {/* Selection Mode Overlay */}
+      {isSelectingArea && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 text-holo-gold text-sm px-4 py-2 rounded border border-holo-gold/30 z-[1010]">
+          Haga clic en el mapa para seleccionar el área de 10km x 10km
+        </div>
+      )}
       
       {/* UI Elements that overlay the map */}
       <div className="absolute top-2 left-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-[1000]">

@@ -1,7 +1,7 @@
-
 import React, { useState, useRef } from 'react';
 import { FileText, Printer, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import html2pdf from 'html2pdf.js';
 
 const ReportGenerator: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -61,58 +61,27 @@ const ReportGenerator: React.FC = () => {
 
   const handleDownloadReport = () => {
     if (reportRef.current) {
-      const reportHTML = reportRef.current.innerHTML;
+      toast.info('Generando PDF...');
       
-      // Prepare the complete HTML document with embedded images
-      const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Informe de Alerta Crítica</title>
-            <meta charset="UTF-8">
-            <style>
-              body { font-family: 'Courier New', monospace; padding: 20px; }
-              .title { font-size: 18px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
-              .section { margin-bottom: 15px; }
-              .label { font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 3px; }
-              .content { margin-bottom: 10px; }
-              .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-              .full-width { grid-column: span 2; }
-              .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ccc; text-align: center; font-size: 11px; color: #999; }
-              .images { display: flex; gap: 10px; margin: 15px 0; }
-              .image-container { border: 1px solid #ccc; padding: 5px; }
-              .image-title { font-size: 11px; text-align: center; margin-top: 5px; }
-              img { max-width: 100%; height: auto; }
-            </style>
-          </head>
-          <body>
-            <div class="report">
-              ${reportHTML}
-            </div>
-          </body>
-        </html>
-      `;
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'Informe_Alerta_Critica.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
       
-      // Create a blob with the HTML content
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      
-      // Create a data URL from the blob
-      const url = URL.createObjectURL(blob);
-      
-      // Create a temporary anchor element for download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Informe_Alerta_Critica.html';
-      
-      // Trigger download
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      toast.success('Informe descargado con éxito');
+      html2pdf()
+        .from(reportRef.current)
+        .set(opt)
+        .save()
+        .then(() => {
+          toast.success('Informe PDF descargado con éxito');
+        })
+        .catch((error) => {
+          console.error('Error al generar PDF:', error);
+          toast.error('Error al generar el PDF. Por favor, intente nuevamente.');
+        });
     }
   };
 
