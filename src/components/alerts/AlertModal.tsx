@@ -104,12 +104,42 @@ const AlertModal: React.FC<AlertModalProps> = ({ open, onOpenChange }) => {
           <div className="col-span-3 md:col-span-2">
             <Tabs defaultValue="info" className="w-full" onValueChange={setActiveTab}>
               <TabsList className="grid grid-cols-6 bg-black border border-holo-gold/30 h-auto">
-                <TabsTrigger value="info" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[11px] md:text-xs overflow-hidden">Información</TabsTrigger>
-                <TabsTrigger value="report" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[11px] md:text-xs overflow-hidden">Generar Informe</TabsTrigger>
-                <TabsTrigger value="send" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[11px] md:text-xs overflow-hidden">Enviar Reporte</TabsTrigger>
-                <TabsTrigger value="satellite" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[11px] md:text-xs overflow-hidden">Imagen Satelital</TabsTrigger>
-                <TabsTrigger value="sar" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[11px] md:text-xs overflow-hidden">Imagen SAR</TabsTrigger>
-                <TabsTrigger value="uav" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[11px] md:text-xs overflow-hidden">Recon UAV</TabsTrigger>
+                <TabsTrigger 
+                  value="info" 
+                  className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[10px] md:text-xs truncate"
+                >
+                  Información
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="report" 
+                  className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[10px] md:text-xs truncate"
+                >
+                  Generar Informe
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="send" 
+                  className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[10px] md:text-xs truncate"
+                >
+                  Enviar Reporte
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="satellite" 
+                  className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[10px] md:text-xs truncate"
+                >
+                  Imagen Satelital
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="sar" 
+                  className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[10px] md:text-xs truncate"
+                >
+                  Imagen SAR
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="uav" 
+                  className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold px-2 py-1.5 h-auto text-[10px] md:text-xs truncate"
+                >
+                  Recon UAV
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="info" className="mt-4 holo-panel">

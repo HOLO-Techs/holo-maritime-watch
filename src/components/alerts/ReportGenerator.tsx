@@ -62,10 +62,14 @@ const ReportGenerator: React.FC = () => {
   const handleDownloadReport = () => {
     if (reportRef.current) {
       const reportHTML = reportRef.current.innerHTML;
-      const blob = new Blob([`
+      
+      // Prepare the complete HTML document with embedded images
+      const htmlContent = `
+        <!DOCTYPE html>
         <html>
           <head>
             <title>Informe de Alerta Crítica</title>
+            <meta charset="UTF-8">
             <style>
               body { font-family: 'Courier New', monospace; padding: 20px; }
               .title { font-size: 18px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
@@ -87,16 +91,27 @@ const ReportGenerator: React.FC = () => {
             </div>
           </body>
         </html>
-      `], { type: 'text/html' });
+      `;
       
+      // Create a blob with the HTML content
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      
+      // Create a data URL from the blob
       const url = URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element for download
       const a = document.createElement('a');
       a.href = url;
       a.download = 'Informe_Alerta_Critica.html';
+      
+      // Trigger download
       document.body.appendChild(a);
       a.click();
+      
+      // Clean up
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
       toast.success('Informe descargado con éxito');
     }
   };

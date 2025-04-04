@@ -80,7 +80,7 @@ const OperationsPanel: React.FC = () => {
                   onClick={handleSatelliteOperation}
                 >
                   <Satellite size={16} />
-                  <span>Iniciar Selección de Área</span>
+                  <span>Solicitar Imagen</span>
                 </button>
               </div>
             )}
@@ -97,7 +97,7 @@ const OperationsPanel: React.FC = () => {
                   onClick={handleSarOperation}
                 >
                   <Radio size={16} />
-                  <span>Iniciar Selección de Área</span>
+                  <span>Solicitar Imagen</span>
                 </button>
               </div>
             )}
@@ -114,7 +114,7 @@ const OperationsPanel: React.FC = () => {
                   onClick={handleUavOperation}
                 >
                   <AlertTriangle size={16} />
-                  <span>Iniciar Planificación de Ruta</span>
+                  <span>Solicitar UAV</span>
                 </button>
               </div>
             )}
@@ -124,7 +124,7 @@ const OperationsPanel: React.FC = () => {
       
       {/* UAV Modal */}
       <Dialog open={showUavModal} onOpenChange={setShowUavModal}>
-        <DialogContent className="bg-black border border-holo-gold/50 text-holo-gray max-w-3xl">
+        <DialogContent className="bg-black border border-holo-gold/50 text-holo-gray max-w-3xl z-[2000]">
           <DialogHeader>
             <DialogTitle className="text-holo-gold text-xl">Solicitar Recon UAV</DialogTitle>
           </DialogHeader>
@@ -144,7 +144,7 @@ const OperationsPanel: React.FC = () => {
       
       {/* Locked Feature Modal */}
       <Dialog open={showLockedFeatureModal} onOpenChange={setShowLockedFeatureModal}>
-        <DialogContent className="bg-black border border-holo-gold/50 text-holo-gray max-w-md">
+        <DialogContent className="bg-black border border-holo-gold/50 text-holo-gray max-w-md z-[2000]">
           <DialogHeader>
             <DialogTitle className="text-holo-gold flex items-center gap-2">
               <Lock size={18} /> Funcionalidad Limitada
