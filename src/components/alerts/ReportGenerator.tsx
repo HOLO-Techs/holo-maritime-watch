@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { FileText, Printer, Download } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ReportGenerator: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateReport = () => {
     setIsGenerating(true);
@@ -12,6 +14,91 @@ const ReportGenerator: React.FC = () => {
       setIsGenerating(false);
       setReportGenerated(true);
     }, 1500);
+  };
+
+  const handlePrintReport = () => {
+    if (reportRef.current) {
+      const printWindow = window.open('', '_blank');
+      
+      if (printWindow) {
+        const reportHTML = reportRef.current.innerHTML;
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Informe de Alerta Crítica</title>
+              <style>
+                body { font-family: 'Courier New', monospace; padding: 20px; }
+                .title { font-size: 18px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
+                .section { margin-bottom: 15px; }
+                .label { font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 3px; }
+                .content { margin-bottom: 10px; }
+                .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                .full-width { grid-column: span 2; }
+                .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ccc; text-align: center; font-size: 11px; color: #999; }
+                .images { display: flex; gap: 10px; margin: 15px 0; }
+                .image-container { border: 1px solid #ccc; padding: 5px; }
+                .image-title { font-size: 11px; text-align: center; margin-top: 5px; }
+                img { max-width: 100%; height: auto; }
+              </style>
+            </head>
+            <body>
+              <div class="report">
+                ${reportHTML}
+              </div>
+              <script>
+                window.onload = function() { window.print(); setTimeout(function() { window.close(); }, 500); }
+              </script>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        toast.success('Imprimiendo informe...');
+      } else {
+        toast.error('No se pudo abrir la ventana de impresión. Verifique la configuración de su navegador.');
+      }
+    }
+  };
+
+  const handleDownloadReport = () => {
+    if (reportRef.current) {
+      const reportHTML = reportRef.current.innerHTML;
+      const blob = new Blob([`
+        <html>
+          <head>
+            <title>Informe de Alerta Crítica</title>
+            <style>
+              body { font-family: 'Courier New', monospace; padding: 20px; }
+              .title { font-size: 18px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 15px; }
+              .section { margin-bottom: 15px; }
+              .label { font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 3px; }
+              .content { margin-bottom: 10px; }
+              .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+              .full-width { grid-column: span 2; }
+              .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ccc; text-align: center; font-size: 11px; color: #999; }
+              .images { display: flex; gap: 10px; margin: 15px 0; }
+              .image-container { border: 1px solid #ccc; padding: 5px; }
+              .image-title { font-size: 11px; text-align: center; margin-top: 5px; }
+              img { max-width: 100%; height: auto; }
+            </style>
+          </head>
+          <body>
+            <div class="report">
+              ${reportHTML}
+            </div>
+          </body>
+        </html>
+      `], { type: 'text/html' });
+      
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Informe_Alerta_Critica.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Informe descargado con éxito');
+    }
   };
 
   return (
@@ -27,7 +114,7 @@ const ReportGenerator: React.FC = () => {
         </div>
       ) : reportGenerated ? (
         <div className="space-y-4">
-          <div className="border border-holo-gray/30 rounded p-4 bg-black/50">
+          <div ref={reportRef} className="border border-holo-gray/30 rounded p-4 bg-black/50">
             <h4 className="text-holo-gold border-b border-holo-gold/30 pb-2 mb-3 font-medium">INFORME DE ALERTA CRÍTICA</h4>
             
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -75,10 +162,40 @@ const ReportGenerator: React.FC = () => {
                 Las características de propulsión sugieren que podría tratarse de un submarino no convencional.
               </div>
             </div>
-            
+
             <div className="mb-4">
               <div className="holo-label">EVIDENCIA VISUAL</div>
-              <div className="text-sm text-holo-gray">
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <div className="border border-holo-gray/30 rounded overflow-hidden">
+                  <div className="bg-black/70 p-1 text-xs text-holo-gray">Imagen Satelital</div>
+                  <img 
+                    src="/lovable-uploads/28471435-86a2-4cdd-a04a-531532e08d12.png" 
+                    alt="Imagen Satelital" 
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="bg-black/70 p-1 text-[10px] text-holo-gray/70">
+                    <div className="flex justify-between">
+                      <span>ID: IMG-4805</span>
+                      <span>Hace 44 min</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="border border-holo-gray/30 rounded overflow-hidden">
+                  <div className="bg-black/70 p-1 text-xs text-holo-gray">Imagen SAR</div>
+                  <img 
+                    src="/lovable-uploads/befcd5fe-c34e-4a52-9492-b065a4fefbfa.png" 
+                    alt="Imagen SAR" 
+                    className="w-full h-auto object-cover" 
+                  />
+                  <div className="bg-black/70 p-1 text-[10px] text-holo-gray/70">
+                    <div className="flex justify-between">
+                      <span>ID: IMG-2500</span>
+                      <span>Hace 18 min</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="text-sm text-holo-gray mt-2">
                 Disponibles imágenes satelitales y SAR que confirman la presencia de un objeto no identificado
                 en las coordenadas indicadas. Las imágenes muestran una estela térmica característica de
                 propulsión submarina.
@@ -110,11 +227,11 @@ const ReportGenerator: React.FC = () => {
           </div>
           
           <div className="flex justify-end gap-2">
-            <button className="holo-button">
+            <button className="holo-button" onClick={handlePrintReport}>
               <Printer size={16} />
               <span>Imprimir</span>
             </button>
-            <button className="holo-button">
+            <button className="holo-button" onClick={handleDownloadReport}>
               <Download size={16} />
               <span>Descargar</span>
             </button>

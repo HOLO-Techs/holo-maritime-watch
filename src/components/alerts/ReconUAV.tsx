@@ -19,12 +19,22 @@ const ReconUAV: React.FC = () => {
   
   return (
     <div className="holo-panel">
-      <h3 className="holo-title text-sm mb-2">Reconocimiento UAV</h3>
+      <h3 className="holo-title text-sm mb-2">
+        {searchingUAV 
+          ? "Reconocimiento UAV" 
+          : searchCompleted 
+            ? "No se encontraron UAVs disponibles" 
+            : "Reconocimiento UAV"}
+      </h3>
       
       <div className="flex flex-col items-center justify-center min-h-60 border border-holo-gray/30 rounded bg-black/60 p-4">
         <div className="relative mb-6">
-          <div className="absolute inset-0 rounded-full border-2 border-holo-gold/30"></div>
-          <Radar size={80} className="text-holo-gold animate-radar-spin opacity-80" />
+          <div className="absolute inset-0 rounded-full border-2 border-green-500/30"></div>
+          {searchingUAV ? (
+            <Radar size={80} className="text-green-500 animate-radar-spin opacity-80" />
+          ) : (
+            <Radar size={80} className="text-green-500/50 opacity-80" />
+          )}
         </div>
         
         <div className="military-typeface text-center">

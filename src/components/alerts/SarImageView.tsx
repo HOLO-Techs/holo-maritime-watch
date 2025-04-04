@@ -13,9 +13,11 @@ const SarImageView: React.FC = () => {
           <TabsTrigger value="recent" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold">
             Imágenes recientes
           </TabsTrigger>
-          <TabsTrigger value="request" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold opacity-60" disabled>
-            Solicitar nueva imagen
-            <Lock size={12} className="ml-1" />
+          <TabsTrigger value="request" className="data-[state=active]:bg-holo-gold/20 data-[state=active]:text-holo-gold disabled:bg-black/70 disabled:text-holo-gray/40 disabled:cursor-not-allowed disabled:border-holo-gray/20" disabled>
+            <div className="flex items-center gap-1">
+              <span>Solicitar nueva imagen</span>
+              <Lock size={12} />
+            </div>
           </TabsTrigger>
         </TabsList>
         
@@ -66,9 +68,18 @@ const SarImageView: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="request">
-          <div className="flex flex-col items-center justify-center h-64 border border-holo-gray/30 rounded">
+          <div className="flex flex-col items-center justify-center h-64 border border-holo-gray/30 rounded p-4">
             <Lock size={24} className="text-holo-gray/50 mb-2" />
-            <p className="text-sm text-holo-gray/70">No disponible en la versión demo</p>
+            <p className="text-sm text-holo-gray/70 mb-4">
+              No disponible en la versión demo
+            </p>
+            <button 
+              className="holo-button opacity-70 cursor-not-allowed" 
+              disabled
+            >
+              <Lock size={16} className="mr-1" />
+              Función Bloqueada
+            </button>
           </div>
         </TabsContent>
       </Tabs>

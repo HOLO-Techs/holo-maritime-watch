@@ -111,6 +111,32 @@
     font-family: 'Courier New', monospace;
     letter-spacing: 0.05em;
   }
+  
+  @keyframes radar-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-radar-spin {
+    animation: radar-spin 3s linear infinite;
+  }
+  
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+  
+  .animate-blink {
+    animation: blink 1.5s ease-in-out infinite;
+  }
 }
 
 /* Import google fonts */

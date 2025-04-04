@@ -75,28 +75,6 @@ const OperationsPanel: React.FC = () => {
                   mostrará un área de 100 km² (10km x 10km) para captura de imagen.
                 </p>
                 
-                <div className="bg-black/50 border border-holo-gold/30 rounded-md p-3">
-                  <h4 className="text-holo-gold text-sm mb-2">Parámetros de captura</h4>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <label className="holo-label block mb-1">Resolución</label>
-                      <select className="holo-input w-full">
-                        <option>Alta (1m)</option>
-                        <option>Media (5m)</option>
-                        <option>Baja (10m)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="holo-label block mb-1">Prioridad</label>
-                      <select className="holo-input w-full">
-                        <option>Alta</option>
-                        <option>Media</option>
-                        <option>Baja</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                
                 <button 
                   className="holo-button w-full military-cursor"
                   onClick={handleSatelliteOperation}
@@ -114,28 +92,6 @@ const OperationsPanel: React.FC = () => {
                   Ideal para condiciones de nubosidad o nocturnas.
                 </p>
                 
-                <div className="bg-black/50 border border-holo-gold/30 rounded-md p-3">
-                  <h4 className="text-holo-gold text-sm mb-2">Parámetros de captura</h4>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <label className="holo-label block mb-1">Banda</label>
-                      <select className="holo-input w-full">
-                        <option>Banda X</option>
-                        <option>Banda C</option>
-                        <option>Banda L</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="holo-label block mb-1">Polarización</label>
-                      <select className="holo-input w-full">
-                        <option>VV/VH</option>
-                        <option>HH/HV</option>
-                        <option>Full</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                
                 <button 
                   className="holo-button w-full military-cursor"
                   onClick={handleSarOperation}
@@ -152,28 +108,6 @@ const OperationsPanel: React.FC = () => {
                   Planifique una ruta de reconocimiento con UAV para vigilancia de un área.
                   Puede crear rutas de hasta 5 puntos para maximizar la cobertura.
                 </p>
-                
-                <div className="bg-black/50 border border-holo-gold/30 rounded-md p-3">
-                  <h4 className="text-holo-gold text-sm mb-2">Parámetros de misión</h4>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <label className="holo-label block mb-1">Altitud</label>
-                      <select className="holo-input w-full">
-                        <option>Baja (500m)</option>
-                        <option>Media (1000m)</option>
-                        <option>Alta (3000m)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="holo-label block mb-1">Velocidad</label>
-                      <select className="holo-input w-full">
-                        <option>Estándar</option>
-                        <option>Crucero</option>
-                        <option>Máxima</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
                 
                 <button 
                   className="holo-button w-full military-cursor"
