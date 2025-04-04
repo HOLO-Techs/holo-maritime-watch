@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { AlertCircle, Cable, ZoomIn, ZoomOut } from 'lucide-react';
+import { AlertTriangle, AlertCircle, ZoomIn, ZoomOut } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -41,14 +41,14 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       // Enable scroll wheel zoom
       map.scrollWheelZoom.enable();
       
-      // Create custom icons
+      // Create custom icons - using AlertTriangle instead of Cable for critical alert
       const criticalIcon = L.divIcon({
         className: 'custom-icon',
         html: `
           <div class="relative">
             <div class="absolute -inset-4 bg-red-500/20 rounded-full animate-pulse"></div>
             <div class="relative z-10 text-red-500">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cable"><path d="M4 9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9z"/><path d="M2 14h2"/><path d="M20 14h2"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-triangle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
             </div>
           </div>
         `,
@@ -187,7 +187,7 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       <div className="absolute top-2 right-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-[1000]">
         <div className="text-holo-gold/80 font-semibold mb-1">Leyenda</div>
         <div className="flex items-center gap-1 mb-1">
-          <Cable className="w-4 h-4 text-red-500" />
+          <AlertTriangle className="w-4 h-4 text-red-500" />
           <span>Alerta Crítica</span>
         </div>
         <div className="flex items-center gap-1">
