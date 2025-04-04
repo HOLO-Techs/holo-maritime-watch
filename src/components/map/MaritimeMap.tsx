@@ -8,6 +8,11 @@ interface MaritimeMapProps {
   onAlertClick: () => void;
 }
 
+// Extend PolylineOptions to include className
+interface ExtendedPolylineOptions extends L.PolylineOptions {
+  className?: string;
+}
+
 const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -90,7 +95,7 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
         
         // Remove existing grid lines
         map.eachLayer((layer) => {
-          if (layer.options && layer.options.className === 'grid-line') {
+          if (layer.options && 'className' in layer.options && layer.options.className === 'grid-line') {
             map.removeLayer(layer);
           }
         });
@@ -104,7 +109,7 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
             opacity: 0.3,
             interactive: false,
             className: 'grid-line'
-          }).addTo(map);
+          } as ExtendedPolylineOptions).addTo(map);
         }
         
         // Add vertical grid lines
@@ -116,7 +121,7 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
             opacity: 0.3,
             interactive: false,
             className: 'grid-line'
-          }).addTo(map);
+          } as ExtendedPolylineOptions).addTo(map);
         }
       };
       
