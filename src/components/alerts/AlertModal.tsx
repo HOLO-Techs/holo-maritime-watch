@@ -60,7 +60,7 @@ const AlertModal: React.FC<AlertModalProps> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-black border border-holo-gold/50 text-holo-gray max-w-4xl max-h-[90vh] overflow-y-auto z-[2000]" overlayClassName="bg-transparent">
+      <DialogContent className="bg-black border border-holo-gold/50 text-holo-gray max-w-4xl max-h-[90vh] overflow-y-auto z-[2000]">
         <DialogHeader>
           <DialogTitle className="text-red-500 text-xl flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" /> ALERTA CRÍTICA
