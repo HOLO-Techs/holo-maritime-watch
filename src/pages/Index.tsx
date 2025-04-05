@@ -4,6 +4,7 @@ import MainLayout from '../components/layout/MainLayout';
 import MaritimeMap from '../components/map/MaritimeMap';
 import AlertModal from '../components/alerts/AlertModal';
 import OperationsPanel from '../components/operations/OperationsPanel';
+import SatelliteImageView from '../components/alerts/SatelliteImageView'; 
 import { AlertTriangle, Bell, Calendar, Clock } from 'lucide-react';
 
 const Index = () => {
@@ -130,6 +131,9 @@ const Index = () => {
           
           {/* Operations Panel */}
           <OperationsPanel />
+          
+          {/* Satellite Image View */}
+          <SatelliteImageView />
         </div>
       </div>
       

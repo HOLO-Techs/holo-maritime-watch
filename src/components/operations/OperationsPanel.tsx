@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Satellite, Radio, AlertTriangle, Lock, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ReconUAV from '../alerts/ReconUAV';
@@ -17,10 +17,26 @@ const OperationsPanel: React.FC = () => {
   const [showLockedFeatureModal, setShowLockedFeatureModal] = useState(false);
   const [areaSelectionActive, setAreaSelectionActive] = useState<AreaSelectionEvent | null>(null);
   
+  // Limpiar estado de selección al montar/desmontar componente
+  useEffect(() => {
+    return () => {
+      // Asegurarse de que cualquier selección activa se cancele al desmontar
+      if (areaSelectionActive) {
+        const event = new CustomEvent('area-selection-update', { 
+          detail: { type: areaSelectionActive.type, active: false } 
+        });
+        window.dispatchEvent(event);
+      }
+    };
+  }, []);
+  
   const handleAreaSelectionComplete = (event: Event) => {
     // Get selection details if available
     const detail = (event as CustomEvent).detail;
     console.log("Area selection complete with details:", detail);
+    
+    // Store the current selection type before clearing
+    const currentType = areaSelectionActive?.type;
     
     // Clear the selection state
     setAreaSelectionActive(null);
@@ -28,7 +44,7 @@ const OperationsPanel: React.FC = () => {
     // Show the appropriate modal based on operation type with a slight delay
     // to allow the map to complete its visual updates first
     setTimeout(() => {
-      if (areaSelectionActive?.type === 'uav') {
+      if (currentType === 'uav') {
         setShowUavModal(true);
       } else {
         setShowLockedFeatureModal(true);
@@ -58,7 +74,7 @@ const OperationsPanel: React.FC = () => {
     });
     window.dispatchEvent(event);
     
-    toast.info("Seleccione un área de 10km x 10km en el mapa");
+    toast.info("Seleccione un área de 20km x 20km en el mapa");
     
     // Set up listener for when area is selected on map
     window.addEventListener('area-selection-complete', handleAreaSelectionComplete, { once: true });
@@ -86,7 +102,7 @@ const OperationsPanel: React.FC = () => {
     });
     window.dispatchEvent(event);
     
-    toast.info("Seleccione un área de 10km x 10km en el mapa");
+    toast.info("Seleccione un área de 20km x 20km en el mapa");
     
     // Set up listener for when area is selected on map
     window.addEventListener('area-selection-complete', handleAreaSelectionComplete, { once: true });
@@ -114,7 +130,7 @@ const OperationsPanel: React.FC = () => {
     });
     window.dispatchEvent(event);
     
-    toast.info("Seleccione un área de 10km x 10km en el mapa");
+    toast.info("Seleccione un área de 20km x 20km en el mapa");
     
     // Set up listener for when area is selected on map
     window.addEventListener('area-selection-complete', handleAreaSelectionComplete, { once: true });
@@ -171,7 +187,7 @@ const OperationsPanel: React.FC = () => {
               <div className="space-y-3">
                 <p className="text-sm">
                   Solicite una imagen satelital en cualquier punto del mapa. El cursor 
-                  mostrará un área de 100 km² (10km x 10km) para captura de imagen.
+                  mostrará un área de 400 km² (20km x 20km) para captura de imagen.
                 </p>
                 
                 <button 

@@ -22,6 +22,7 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
   const [selectionType, setSelectionType] = useState<'satellite' | 'sar' | 'uav' | null>(null);
   const selectionRectRef = useRef<L.Rectangle | null>(null);
 
+  // Inicializar el mapa
   useEffect(() => {
     if (!mapContainerRef.current) return;
     
@@ -149,46 +150,46 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
     const handleAreaSelectionUpdate = (event: CustomEvent) => {
       const { type, active } = event.detail;
       
+      // Actualizar estado local
       setIsSelectingArea(active);
       setSelectionType(active ? type : null);
       
-      // Toggle dragging based on selection mode
+      // Manejar comportamiento del mapa durante la selección
       if (mapRef.current) {
         if (active) {
-          mapRef.current.dragging.disable(); // Disable dragging when in selection mode
+          // Solo desactivamos el arrastre, pero el mapa debe seguir visible
+          mapRef.current.dragging.disable();
         } else {
-          mapRef.current.dragging.enable(); // Re-enable dragging when not in selection mode
+          // Reactivar arrastre al cancelar
+          mapRef.current.dragging.enable();
           
-          // Remove selection rectangle if it exists
-          if (selectionRectRef.current) {
-            mapRef.current.removeLayer(selectionRectRef.current);
+          // Eliminar el rectángulo de selección si existe
+          if (selectionRectRef.current && mapRef.current) {
+            selectionRectRef.current.removeFrom(mapRef.current);
             selectionRectRef.current = null;
           }
         }
       }
     };
     
+    // Agregar el event listener
     window.addEventListener('area-selection-update', handleAreaSelectionUpdate as EventListener);
     
-    // Listen for area selection complete
-    window.addEventListener('area-selection-complete', () => {
-      setIsSelectingArea(false);
-      setSelectionType(null);
-      
-      // Re-enable map dragging when selection is complete
+    // Manejar la finalización de la selección
+    const handleAreaSelectionComplete = () => {
       if (mapRef.current) {
         mapRef.current.dragging.enable();
         
-        // Clean up selection rectangle
-        if (selectionRectRef.current) {
-          mapRef.current.removeLayer(selectionRectRef.current);
-          selectionRectRef.current = null;
-        }
+        // No eliminamos el rectángulo aquí, lo manejamos al finalizar la selección
+        // para que sea visible hasta que se muestre el modal
       }
-    });
+    };
+    
+    window.addEventListener('area-selection-complete', handleAreaSelectionComplete);
     
     return () => {
       window.removeEventListener('area-selection-update', handleAreaSelectionUpdate as EventListener);
+      window.removeEventListener('area-selection-complete', handleAreaSelectionComplete);
     };
   }, []);
   
@@ -201,16 +202,17 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
     // Function to create a 10km x 10km rectangle
     const createSelectionRectangle = (e: L.LeafletMouseEvent) => {
       // Clear any existing rectangle
-      if (selectionRectRef.current) {
-        map.removeLayer(selectionRectRef.current);
+      if (selectionRectRef.current && mapRef.current) {
+        selectionRectRef.current.removeFrom(mapRef.current);
+        selectionRectRef.current = null;
       }
       
       // Get click coordinates
       const center = e.latlng;
       
       // Create bounds for a 10km x 10km square (approximately)
-      // Increased from 0.09 to 0.15 degrees for larger area (approximately 15-20km)
-      const offset = 0.075; // half of 0.15 for ~7.5-10km in each direction
+      // Increased from 0.075 to 0.15 degrees for larger area (approximately 15-20km)
+      const offset = 0.15; // Increased for larger selection area
       const bounds = L.latLngBounds(
         [center.lat - offset, center.lng - offset],
         [center.lat + offset, center.lng + offset]
@@ -273,23 +275,17 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
 
   return (
     <div className="relative w-full h-full rounded overflow-hidden holo-monitor-border">
-      {/* Map Container - Always visible regardless of selection mode */}
+      {/* Map Container - Siempre visible */}
       <div 
         ref={mapContainerRef} 
         className={`absolute inset-0 bg-holo-navy/90 ${isSelectingArea ? 'cursor-crosshair' : 'cursor-grab'}`}
-        style={{ zIndex: 10 }}
-      >
-        {!mapLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-holo-gold text-lg">Cargando mapa territorial...</div>
-          </div>
-        )}
-      </div>
+        style={{ zIndex: 5 }}
+      />
       
-      {/* Selection Mode Overlay - Positioned above the map but below other UI components */}
+      {/* Selection Mode Overlay - Posicionado por encima del mapa pero visible */}
       {isSelectingArea && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 text-holo-gold text-sm px-4 py-2 rounded border border-holo-gold/30 z-20">
-          Haga clic en el mapa para seleccionar el área de 10km x 10km
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/80 text-holo-gold text-sm px-4 py-2 rounded border border-holo-gold/30 z-20">
+          Haga clic en el mapa para seleccionar el área de 20km x 20km
         </div>
       )}
       
@@ -338,6 +334,12 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
           <ZoomOut size={16} />
         </button>
       </div>
+      
+      {!mapLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center z-40">
+          <div className="text-holo-gold text-lg">Cargando mapa territorial...</div>
+        </div>
+      )}
     </div>
   );
 };
