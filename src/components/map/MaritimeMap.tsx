@@ -152,9 +152,19 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       setIsSelectingArea(active);
       setSelectionType(active ? type : null);
       
-      if (!active && selectionRectRef.current && mapRef.current) {
-        mapRef.current.removeLayer(selectionRectRef.current);
-        selectionRectRef.current = null;
+      // Toggle dragging based on selection mode
+      if (mapRef.current) {
+        if (active) {
+          mapRef.current.dragging.disable(); // Disable dragging when in selection mode
+        } else {
+          mapRef.current.dragging.enable(); // Re-enable dragging when not in selection mode
+          
+          // Remove selection rectangle if it exists
+          if (selectionRectRef.current) {
+            mapRef.current.removeLayer(selectionRectRef.current);
+            selectionRectRef.current = null;
+          }
+        }
       }
     };
     
@@ -165,9 +175,15 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       setIsSelectingArea(false);
       setSelectionType(null);
       
-      if (selectionRectRef.current && mapRef.current) {
-        mapRef.current.removeLayer(selectionRectRef.current);
-        selectionRectRef.current = null;
+      // Re-enable map dragging when selection is complete
+      if (mapRef.current) {
+        mapRef.current.dragging.enable();
+        
+        // Clean up selection rectangle
+        if (selectionRectRef.current) {
+          mapRef.current.removeLayer(selectionRectRef.current);
+          selectionRectRef.current = null;
+        }
       }
     });
     
@@ -193,8 +209,8 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       const center = e.latlng;
       
       // Create bounds for a 10km x 10km square (approximately)
-      // 0.09 degrees is roughly 10km at the equator
-      const offset = 0.045; // half of 0.09 for 5km in each direction
+      // Increased from 0.09 to 0.15 degrees for larger area (approximately 15-20km)
+      const offset = 0.075; // half of 0.15 for ~7.5-10km in each direction
       const bounds = L.latLngBounds(
         [center.lat - offset, center.lng - offset],
         [center.lat + offset, center.lng + offset]
@@ -206,12 +222,12 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
       if (selectionType === 'sar') color = '#ef4444'; // Red for SAR
       if (selectionType === 'uav') color = '#10b981'; // Green for UAV
       
-      // Create and add the rectangle
+      // Create and add the rectangle with more prominent styling
       const rectangle = L.rectangle(bounds, {
         color: color,
-        weight: 2,
+        weight: 3,
         fillColor: color,
-        fillOpacity: 0.2,
+        fillOpacity: 0.3,
         interactive: false
       });
       
@@ -257,10 +273,11 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
 
   return (
     <div className="relative w-full h-full rounded overflow-hidden holo-monitor-border">
-      {/* Map Container */}
+      {/* Map Container - Ensure it's always visible with position: absolute */}
       <div 
         ref={mapContainerRef} 
         className={`absolute inset-0 bg-holo-navy/90 ${isSelectingArea ? 'cursor-crosshair' : 'cursor-grab'}`}
+        style={{ zIndex: 1 }}
       >
         {!mapLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">

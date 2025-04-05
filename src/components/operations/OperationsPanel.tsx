@@ -22,7 +22,13 @@ const OperationsPanel: React.FC = () => {
     // For now, just show the locked feature modal after a brief delay
     setTimeout(() => {
       setAreaSelectionActive(null);
-      setShowLockedFeatureModal(true);
+      
+      // Show the appropriate modal based on operation type
+      if (areaSelectionActive?.type === 'uav') {
+        setShowUavModal(true);
+      } else {
+        setShowLockedFeatureModal(true);
+      }
       
       // Add an event to notify the Maritime Map component to exit selection mode
       const event = new CustomEvent('area-selection-complete', { 
@@ -114,11 +120,6 @@ const OperationsPanel: React.FC = () => {
     
     // Set up listener for when area is selected on map
     window.addEventListener('area-selection-complete', handleAreaSelectionComplete, { once: true });
-    
-    // For UAV we'll show the UAV dialog instead of locked feature
-    window.addEventListener('area-selection-complete', () => {
-      setShowUavModal(true);
-    }, { once: true });
   };
   
   return (
