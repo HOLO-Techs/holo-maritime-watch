@@ -17,14 +17,14 @@ const Index = () => {
     <MainLayout>
       <div className="grid grid-cols-4 gap-4 h-full">
         {/* Main Content Area - Map Only */}
-        <div className="col-span-3 h-full">
+        <div className="col-span-3 h-full relative">
           <div className="h-full">
             <MaritimeMap onAlertClick={handleAlertClick} />
           </div>
         </div>
         
         {/* Right Sidebar */}
-        <div className="col-span-1 space-y-4">
+        <div className="col-span-1 space-y-4 relative z-20">
           {/* Info Panel */}
           <div className="holo-panel">
             <h2 className="holo-title mb-4">Panel Informativo</h2>

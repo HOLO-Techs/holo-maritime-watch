@@ -17,25 +17,23 @@ const OperationsPanel: React.FC = () => {
   const [showLockedFeatureModal, setShowLockedFeatureModal] = useState(false);
   const [areaSelectionActive, setAreaSelectionActive] = useState<AreaSelectionEvent | null>(null);
   
-  const handleAreaSelectionComplete = () => {
-    // This would normally receive coordinates from the map
-    // For now, just show the locked feature modal after a brief delay
+  const handleAreaSelectionComplete = (event: Event) => {
+    // Get selection details if available
+    const detail = (event as CustomEvent).detail;
+    console.log("Area selection complete with details:", detail);
+    
+    // Clear the selection state
+    setAreaSelectionActive(null);
+    
+    // Show the appropriate modal based on operation type with a slight delay
+    // to allow the map to complete its visual updates first
     setTimeout(() => {
-      setAreaSelectionActive(null);
-      
-      // Show the appropriate modal based on operation type
       if (areaSelectionActive?.type === 'uav') {
         setShowUavModal(true);
       } else {
         setShowLockedFeatureModal(true);
       }
-      
-      // Add an event to notify the Maritime Map component to exit selection mode
-      const event = new CustomEvent('area-selection-complete', { 
-        detail: { active: false }
-      });
-      window.dispatchEvent(event);
-    }, 1000);
+    }, 300);
   };
   
   const handleSatelliteOperation = () => {
@@ -235,7 +233,7 @@ const OperationsPanel: React.FC = () => {
         </div>
       </div>
       
-      {/* UAV Modal */}
+      {/* UAV Modal - Increased z-index to ensure visibility */}
       <Dialog open={showUavModal} onOpenChange={setShowUavModal}>
         <DialogContent className="bg-black border border-holo-gold/50 text-holo-gray max-w-3xl z-[2000]">
           <DialogHeader>
@@ -255,7 +253,7 @@ const OperationsPanel: React.FC = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Locked Feature Modal */}
+      {/* Locked Feature Modal - Increased z-index to ensure visibility */}
       <Dialog open={showLockedFeatureModal} onOpenChange={setShowLockedFeatureModal}>
         <DialogContent className="bg-black border border-holo-gold/50 text-holo-gray max-w-md z-[2000]">
           <DialogHeader>

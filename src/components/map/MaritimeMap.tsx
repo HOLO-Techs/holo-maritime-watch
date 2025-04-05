@@ -273,11 +273,11 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
 
   return (
     <div className="relative w-full h-full rounded overflow-hidden holo-monitor-border">
-      {/* Map Container - Ensure it's always visible with position: absolute */}
+      {/* Map Container - Always visible regardless of selection mode */}
       <div 
         ref={mapContainerRef} 
         className={`absolute inset-0 bg-holo-navy/90 ${isSelectingArea ? 'cursor-crosshair' : 'cursor-grab'}`}
-        style={{ zIndex: 1 }}
+        style={{ zIndex: 10 }}
       >
         {!mapLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -286,22 +286,22 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
         )}
       </div>
       
-      {/* Selection Mode Overlay */}
+      {/* Selection Mode Overlay - Positioned above the map but below other UI components */}
       {isSelectingArea && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 text-holo-gold text-sm px-4 py-2 rounded border border-holo-gold/30 z-[1010]">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black/80 text-holo-gold text-sm px-4 py-2 rounded border border-holo-gold/30 z-20">
           Haga clic en el mapa para seleccionar el área de 10km x 10km
         </div>
       )}
       
-      {/* UI Elements that overlay the map */}
-      <div className="absolute top-2 left-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-[1000]">
+      {/* UI Elements that overlay the map - with higher z-index */}
+      <div className="absolute top-2 left-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-30">
         <div className="flex items-center gap-2">
           <span className="text-holo-gray/80">Zoom:</span>
           <span className="text-holo-gold">{mapRef.current ? mapRef.current.getZoom().toFixed(1) : '9.0'} km</span>
         </div>
       </div>
       
-      <div className="absolute bottom-2 left-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-[1000]">
+      <div className="absolute bottom-2 left-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-30">
         <div className="text-holo-gold/80 font-semibold">Mar Caribe (Colombia)</div>
         <div className="flex items-center gap-1 mt-1">
           <span className="text-holo-gray/80">Lat:</span>
@@ -311,7 +311,7 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
         </div>
       </div>
       
-      <div className="absolute top-2 right-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-[1000]">
+      <div className="absolute top-2 right-2 bg-black/60 text-holo-gray text-xs p-2 rounded border border-holo-gold/30 z-30">
         <div className="text-holo-gold/80 font-semibold mb-1">Leyenda</div>
         <div className="flex items-center gap-1 mb-1">
           <AlertTriangle className="w-4 h-4 text-red-500" />
@@ -323,8 +323,8 @@ const MaritimeMap: React.FC<MaritimeMapProps> = ({ onAlertClick }) => {
         </div>
       </div>
       
-      {/* Custom Zoom Controls */}
-      <div className="absolute right-2 bottom-2 flex flex-col gap-1 z-[1000]">
+      {/* Custom Zoom Controls - with higher z-index */}
+      <div className="absolute right-2 bottom-2 flex flex-col gap-1 z-30">
         <button 
           onClick={handleZoomIn}
           className="bg-black/60 text-holo-gray p-2 rounded border border-holo-gold/30 hover:bg-black/80"
